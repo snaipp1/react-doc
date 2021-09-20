@@ -1,23 +1,36 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Switch, Redirect } from 'react-router-dom';
-import Posts from '../pages/Posts';
-import Error from '../pages/Error';
-import About from '../pages/About';
+import { AuthContext } from "../context";
+import { publicRoutes, privateRoutes } from "../router";
 
 const AppRouter = () => {
+    const {isAuth} = useContext(AuthContext);
     return (
-        <Switch>
-            <Route path="/about">
-                <About/>
-            </Route>
-            <Route path="/posts">
-                <Posts/>
-            </Route>
-            <Route path="/error">
-                <Error/>
-            </Route>
-            <Redirect to="/error"/>
-      </Switch>
+        isAuth
+            ?
+            <Switch>
+                {privateRoutes.map(route =>
+                    <Route
+                        component={route.component}
+                        path={route.path}
+                        exact={route.exact}
+                        key={route.path}
+                    />
+                )}
+                <Redirect to='/posts'/>
+            </Switch>
+            :
+            <Switch>
+                {publicRoutes.map(route =>
+                    <Route
+                        component={route.component}
+                        path={route.path}
+                        exact={route.exact}
+                        key={route.path}
+                    />
+                )}
+                <Redirect to='/login'/>
+            </Switch>
     );
 };
 
